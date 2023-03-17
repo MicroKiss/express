@@ -13,7 +13,7 @@ Content-Type: application/json
 	"password": "c"
 }
 ###
-GET http://localhost:3000/user/b
+GET http://localhost:3000/user/get/b
 Authorization: b:b
 ###
 DELETE http://localhost:3000/user/b
@@ -44,6 +44,14 @@ Content-Type: application/json
 Authorization: a:a
 
 {
-	"username": "b",
+	"username": "c",
 	"amount": 1546
 }
+###
+GET http://localhost:3000/transaction/all
+Content-Type: application/json
+Authorization: a:a
+
+###
+GET http://localhost:3000/transaction/get/c
+Authorization: c:c

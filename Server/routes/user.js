@@ -37,11 +37,7 @@ router.get('/all',RestrictAdmin, (req, res) => {
 	res.json (userStorage.Get());
 })
 
-router.route('/:username')
-.get(RestrictSelfParam, (req, res) => {
-	res.json (userStorage.GetOne("username", req.params.username));
-})
-.delete(RestrictAdmin, (req, res) => {
+router.delete('/:username',RestrictAdmin, (req, res) => {
 	try {
 		let user = userStorage.GetOne("username", req.params.username)
 		if (!user)
@@ -52,6 +48,10 @@ router.route('/:username')
 		res.status(412).json(error)
 	}
 })
+
+router.get('/get/:username',RestrictSelfParam, (req, res) => {
+	res.json (userStorage.GetOne("username", req.params.username));
+});
 
 
 module.exports = router
