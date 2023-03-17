@@ -1,0 +1,49 @@
+GET http://localhost:3000/
+###
+GET http://localhost:3000/user
+###
+GET http://localhost:3000/user/all
+Authorization: a:a
+###
+POST http://localhost:3000/user
+Content-Type: application/json
+
+{
+	"username": "c",
+	"password": "c"
+}
+###
+GET http://localhost:3000/user/b
+Authorization: b:b
+###
+DELETE http://localhost:3000/user/b
+Authorization: a:a
+###
+POST http://localhost:3000/transaction/send
+Content-Type: application/json
+Authorization: b:b
+
+{
+	"username": "a",
+	"amount": 1
+}
+
+###
+POST http://localhost:3000/transaction/add
+Content-Type: application/json
+Authorization: a:a
+
+{
+	"username": "b",
+	"amount": 1000
+}
+
+###
+POST http://localhost:3000/transaction/set
+Content-Type: application/json
+Authorization: a:a
+
+{
+	"username": "b",
+	"amount": 1546
+}
