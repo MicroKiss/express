@@ -18,6 +18,8 @@ async function HandleRegister() {
 		ShowError(registerError, "empty fields");
 		return;
 	}
+
+	//we could encode the password before sending, then te server wouldn't know the users' real password but who cares for this little project :P
 	let jsonToSend = {
 		"username": username,
 		"password": password
