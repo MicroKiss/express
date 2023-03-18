@@ -1,7 +1,7 @@
 import config from "./config.js";
 
 function ShowError(where, what) {
-	if(!where)
+	if (!where)
 		return;
 	where.classList.remove('alert-success');
 	where.classList.add('alert-danger');
@@ -15,7 +15,6 @@ function ShowSuccess(where, what) {
 	where.classList.add('alert-success');
 	where.innerHTML = what;
 }
-
 
 function UpdateBalanceUI() {
 	mainBalanceLabel.innerHTML = config.loggedInUser.balance;
@@ -36,9 +35,9 @@ function UpdateUIAfterLogin() {
 	mainBalanceLabel.classList.add('text-success');
 	transactionBalanceLabel.innerHTML = config.loggedInUser.balance;
 	if (config.loggedInUser.roles.includes("admin")) {
+		adminModalButton.disabled = false;
 		transactionAddButton.hidden = false;
 		transactionSetButton.hidden = false;
-		adminModalButton.disabled = false;
 	}
 }
 
@@ -57,9 +56,49 @@ function UpdateUIAfterLogout() {
 	mainBalanceLabel.classList.remove('text-success');
 	mainBalanceLabel.classList.add('text-danger');
 	transactionBalanceLabel.innerHTML = "Login first";
-	adminModalButton.disabled = false;
+	adminModalButton.disabled = true;
 	transactionAddButton.hidden = true;
 	transactionSetButton.hidden = true;
 }
 
-export { ShowError, ShowSuccess, UpdateUIAfterLogin, UpdateUIAfterLogout, UpdateBalanceUI}
+function FillUserTable(tableBody, data) {
+	tableBody.innerHTML = "";
+	data.forEach(item => {
+		let rowData = [item.username, item.balance];
+		InsertTableRow(tableBody, rowData)
+	});
+
+}
+
+function FillTransactionTable(tableBody, data) {
+	tableBody.innerHTML = "";
+	data.forEach(item => {
+		let rowData = [item.sendername, item.receivername, item.type,
+		item.amount, new Date(item.date).toLocaleString()];
+		InsertTableRow(tableBody, rowData)
+	});
+
+}
+
+function FillUserListOptions(list, data) {
+	list.innerHTML = "";
+	data.forEach(user => {
+		let opt = document.createElement("option");
+		opt.value = user.username;
+		opt.innerHTML = user.username;
+		list.append(opt);
+	});
+}
+
+function InsertTableRow(tableBody, item) {
+	let row = tableBody.insertRow(0);
+
+	for (let i = 0; i < item.length; i++) {
+		let cell = row.insertCell(i);
+		cell.innerHTML = item[i];
+	}
+}
+
+
+
+export { ShowError, ShowSuccess, UpdateUIAfterLogin, UpdateUIAfterLogout, UpdateBalanceUI, FillUserTable, FillTransactionTable, FillUserListOptions, InsertTableRow }

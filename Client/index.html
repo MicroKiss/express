@@ -25,10 +25,12 @@
 						data-bs-target="#loginModal">Login/Logout</button>
 				</div>
 				<br>
+				<div class="row">
 				<div class="alert alert-info shadow text-center">
 					<h2 class="">Your balance:</h2>
 					<p class="h2 text-danger" id="mainBalanceLabel">Login first</p>
 				</div>
+			</div>
 				<div class="row">
 					<button type="button" id="transactionModalButton" disabled
 						class="btn btn-warning btn-lg btn-block shadow" data-bs-toggle="modal"
@@ -126,14 +128,16 @@
 						<div class="alert" id="transactionError"></div>
 					</form>
 					<button id="transactionSendButton" type="button" class="btn btn-lg btn-warning shadow">Send</button>
-					<button id="transactionAddButton" hidden type="button" class="btn btn-lg btn-warning shadow">Add</button>
-					<button id="transactionSetButton" hidden type="button" class="btn btn-lg btn-warning shadow">Set</button>
+					<button id="transactionAddButton" hidden type="button"
+						class="btn btn-lg btn-warning shadow">Add</button>
+					<button id="transactionSetButton" hidden type="button"
+						class="btn btn-lg btn-warning shadow">Set</button>
 					<br>
 					<br>
 					<br>
-					<div class="alert alert-warning shadow text-center">
-						<h2 class="">Personal history</h2>
-					</div>
+					<button data-bs-toggle="collapse" class="btn btn-lg btn-info shadow"
+					data-bs-target="#transactionsHistoryCollapse">Toggle Personal history</button>
+					<div id="transactionsHistoryCollapse" class="collapse" data-bs-parent="#adminModalBody">
 					<table class="table table-striped">
 						<thead>
 							<tr>
@@ -148,6 +152,7 @@
 						</tbody>
 					</table>
 				</div>
+				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
 				</div>
@@ -161,15 +166,14 @@
 				<div class="modal-header">
 					<h2 class="modal-title">Account balances</h2>
 				</div>
-				<div class="modal-body">
-
+				<div class="modal-body" id="adminModalBody">
 
 					<button data-bs-toggle="collapse" class="btn btn-lg btn-info shadow"
 						data-bs-target="#adminUsersTableBodyCollapse">Users</button>
 					<button data-bs-toggle="collapse" class="btn btn-lg btn-info shadow"
 						data-bs-target="#adminTransactionsTableCollapse">Transactions</button>
 
-					<div id="adminUsersTableBodyCollapse" class="collapse" data-bs-parent="#adminModal">
+					<div id="adminUsersTableBodyCollapse" class="collapse" data-bs-parent="#adminModalBody">
 						<table class="table table-striped">
 							<thead>
 								<tr>
@@ -181,7 +185,7 @@
 							</tbody>
 						</table>
 					</div>
-					<div id="adminTransactionsTableCollapse" class="collapse" data-bs-parent="#adminModal">
+					<div id="adminTransactionsTableCollapse" class="collapse" data-bs-parent="#adminModalBody">
 						<table class="table table-striped">
 							<thead>
 								<tr>
@@ -197,9 +201,9 @@
 						</table>
 					</div>
 				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -1,5 +1,6 @@
 import { Get, Post } from "./serverconnection.js";
-import { ShowError, ShowSuccess, UpdateUIAfterLogin, UpdateUIAfterLogout, UpdateBalanceUI } from "./interface.js";
+import { ShowError, ShowSuccess, FillUserTable, FillTransactionTable, FillUserListOptions, InsertTableRow } from "./interface.js";
+import { UpdateUIAfterLogin, UpdateUIAfterLogout, UpdateBalanceUI } from "./interface.js";
 import config from "./config.js";
 
 
@@ -25,6 +26,7 @@ async function HandleRegister() {
 	const [result, data] = await Post('/user', jsonToSend);
 	data.then(data => {
 		if (result) {
+			HandleLogout();
 			Login(username, password, loginError);
 			ShowSuccess(registerError, data + ", and logged in");
 			registerPassword.value = "";
@@ -71,41 +73,22 @@ async function HandleLogin() {
 }
 
 async function PopulateFromServer() {
+	let auth = `${config.loggedInUser.username}:${config.loggedInUser.password}`;
 	{
-		transactionUserList.innerHTML = "";
 		const [result, data] = await Get('/user');
 		data.then(data => {
 			if (result) {
-				data.forEach(user => {
-					let opt = document.createElement("option");
-					opt.value = user.username;
-					opt.innerHTML = user.username;
-					transactionUserList.append(opt);
-				});
+				FillUserListOptions(transactionUserList, data);
 			} else {
 				console.error(data);
 			}
 		});
 	}
 	{
-		transactionsTableBody.innerHTML = "";
-		let auth = `${config.loggedInUser.username}:${config.loggedInUser.password}`;
 		const [result, data] = await Get('/transaction/get/' + config.loggedInUser.username, auth);
 		data.then(data => {
 			if (result) {
-				data.reverse().forEach(item => {
-					let row = transactionsTableBody.insertRow();
-					let sender = row.insertCell(0);
-					sender.innerHTML = item.sendername;
-					let receiver = row.insertCell(1);
-					receiver.innerHTML = item.receivername;
-					let type = row.insertCell(2);
-					type.innerHTML = item.type;
-					let amount = row.insertCell(3);
-					amount.innerHTML = item.amount;
-					let date = row.insertCell(4);
-					date.innerHTML = new Date(item.date).toLocaleString();
-				});
+				FillTransactionTable(transactionsTableBody, data);
 			} else {
 				console.error(data);
 			}
@@ -115,46 +98,22 @@ async function PopulateFromServer() {
 	if (!config.loggedInUser.roles.includes("admin"))
 		return;
 
-		
-
-		{
-			adminUsersTableBody.innerHTML = "";
-			let auth = `${config.loggedInUser.username}:${config.loggedInUser.password}`;
-			const [result, data] = await Get('/user/all', auth);
-			data.then(data => {
-				if (result) {
-					data.forEach(item => {
-						let row = adminUsersTableBody.insertRow();
-						let user = row.insertCell(0);
-						user.innerHTML = item.username;
-						let balance = row.insertCell(1);
-						balance.innerHTML = item.balance;
-					});
-				} else {
-					console.error(data);
-				}
-			});
-		}
+	{
+		const [result, data] = await Get('/user/all', auth);
+		data.then(data => {
+			if (result) {
+				FillUserTable(adminUsersTableBody, data);
+			} else {
+				console.error(data);
+			}
+		});
+	}
 
 	{
-		adminTransactionsTableBody.innerHTML = "";
-		let auth = `${config.loggedInUser.username}:${config.loggedInUser.password}`;
 		const [result, data] = await Get('/transaction/all', auth);
 		data.then(data => {
 			if (result) {
-				data.reverse().forEach(item => {
-					let row = adminTransactionsTableBody.insertRow();
-					let sender = row.insertCell(0);
-					sender.innerHTML = item.sendername;
-					let receiver = row.insertCell(1);
-					receiver.innerHTML = item.receivername;
-					let type = row.insertCell(2);
-					type.innerHTML = item.type;
-					let amount = row.insertCell(3);
-					amount.innerHTML = item.amount;
-					let date = row.insertCell(4);
-					date.innerHTML = new Date(item.date).toLocaleString();
-				});
+				FillTransactionTable(adminTransactionsTableBody, data)
 			} else {
 				console.error(data);
 			}
@@ -169,6 +128,10 @@ async function HandleSend() {
 	let amount = transactionAmount.value;
 	if (!username) {
 		ShowError(transactionError, "select a user");
+		return;
+	}
+	if (!amount){
+		ShowError(transactionError, "How much?");
 		return;
 	}
 	if (amount < 1) {
@@ -188,6 +151,8 @@ async function HandleSend() {
 			console.log(data);
 			ShowSuccess(transactionError, data);
 			UpdateBalance();
+			let trans = [config.loggedInUser.username, username, "send", amount, new Date().toLocaleString()];
+			InsertTableRow(transactionsTableBody, trans)
 		} else {
 			ShowError(transactionError, data);
 		}
@@ -200,6 +165,10 @@ async function HandleAdd() {
 	let amount = transactionAmount.value;
 	if (!username) {
 		ShowError(transactionError, "select a user");
+		return;
+	}
+	if (!amount){
+		ShowError(transactionError, "How much?");
 		return;
 	}
 	if (amount < 1) {
@@ -219,6 +188,8 @@ async function HandleAdd() {
 			console.log(data);
 			ShowSuccess(transactionError, data);
 			UpdateBalance();
+			let trans = [config.loggedInUser.username, username, "add", amount, new Date().toLocaleString()];
+			InsertTableRow(transactionsTableBody, trans)
 		} else {
 			ShowError(transactionError, data);
 		}
@@ -231,6 +202,10 @@ async function HandleSet() {
 	let amount = transactionAmount.value;
 	if (!username) {
 		ShowError(transactionError, "select a user");
+		return;
+	}
+	if (!amount){
+		ShowError(transactionError, "How much?");
 		return;
 	}
 
@@ -246,6 +221,8 @@ async function HandleSet() {
 			console.log(data);
 			ShowSuccess(transactionError, data);
 			UpdateBalance();
+			let trans = [config.loggedInUser.username, username, "set", amount, new Date().toLocaleString()];
+			InsertTableRow(transactionsTableBody, trans)
 		} else {
 			ShowError(transactionError, data);
 		}
@@ -264,7 +241,7 @@ async function UpdateBalance() {
 			console.error(data);
 		}
 	});
-	
+
 }
 
 Get('/').then(([result, data]) => {

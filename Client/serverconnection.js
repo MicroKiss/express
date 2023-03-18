@@ -1,8 +1,10 @@
-var backendUrl = 'http://192.168.0.244:3000'
+import config from "./config.js";
+
+var server =config.server;
 
 
 async function Get(route, auth) {
-	let url = backendUrl + (route ? route : '')
+	let url = server + (route ? route : '')
 	let headers = {}
 	if (auth)
 		headers.Authorization = auth;
@@ -29,7 +31,7 @@ async function Get(route, auth) {
 }
 
 async function Post(route, jsonData = {}, auth) {
-	let url = backendUrl + (route ? route : '')
+	let url = server + (route ? route : '')
 	let headers = { "Content-Type": "application/json" };
 	if (auth)
 		headers.Authorization = auth;

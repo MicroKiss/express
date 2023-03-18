@@ -4,7 +4,8 @@ const cors = require('cors')
 const userRoute = require('./routes/user');
 const transactionRoute = require('./routes/transaction');
 const {Authenticate} = require('./utility/authorization');
-const port = 3000
+const config = require('config');
+const port = config.get('SERVER.PORT')
 
 function logger(req, res, next)  {
 	console.log('Request:', req.method, req.url)
