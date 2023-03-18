@@ -99,6 +99,13 @@ function InsertTableRow(tableBody, item) {
 	}
 }
 
+function ShowToast(msg) {
+	toastContent.innerHTML = msg
+	let myAlert = document.querySelector('.toast');
+	let bsAlert = new  bootstrap.Toast(myAlert);
+	bsAlert.show();
+}
 
 
-export { ShowError, ShowSuccess, UpdateUIAfterLogin, UpdateUIAfterLogout, UpdateBalanceUI, FillUserTable, FillTransactionTable, FillUserListOptions, InsertTableRow }
+
+export {ShowToast, ShowError, ShowSuccess, UpdateUIAfterLogin, UpdateUIAfterLogout, UpdateBalanceUI, FillUserTable, FillTransactionTable, FillUserListOptions, InsertTableRow }

@@ -1,6 +1,6 @@
 import { Get, Post } from "./serverconnection.js";
 import { ShowError, ShowSuccess, FillUserTable, FillTransactionTable, FillUserListOptions, InsertTableRow } from "./interface.js";
-import { UpdateUIAfterLogin, UpdateUIAfterLogout, UpdateBalanceUI } from "./interface.js";
+import { UpdateUIAfterLogin, UpdateUIAfterLogout, UpdateBalanceUI, ShowToast } from "./interface.js";
 import config from "./config.js";
 
 
@@ -58,6 +58,7 @@ function HandleLogout() {
 	config.loggedInUser = undefined;
 	UpdateUIAfterLogout();
 	ShowSuccess(loginError, "logged out :)");
+	ShowToast("loggged out");
 }
 
 loginButton.addEventListener('click', HandleLogin);
@@ -73,7 +74,14 @@ async function HandleLogin() {
 }
 
 async function PopulateFromServer() {
+	if(!config.loggedInUser) {
+		ShowToast("Not logged in");
+		return;
+	}
+		ShowToast("Refreshed");
 	let auth = `${config.loggedInUser.username}:${config.loggedInUser.password}`;
+	UpdateBalance ();
+
 	{
 		const [result, data] = await Get('/user');
 		data.then(data => {
@@ -130,7 +138,7 @@ async function HandleSend() {
 		ShowError(transactionError, "select a user");
 		return;
 	}
-	if (!amount){
+	if (!amount) {
 		ShowError(transactionError, "How much?");
 		return;
 	}
@@ -167,7 +175,7 @@ async function HandleAdd() {
 		ShowError(transactionError, "select a user");
 		return;
 	}
-	if (!amount){
+	if (!amount) {
 		ShowError(transactionError, "How much?");
 		return;
 	}
@@ -204,7 +212,7 @@ async function HandleSet() {
 		ShowError(transactionError, "select a user");
 		return;
 	}
-	if (!amount){
+	if (!amount) {
 		ShowError(transactionError, "How much?");
 		return;
 	}
@@ -230,6 +238,7 @@ async function HandleSet() {
 }
 
 
+
 async function UpdateBalance() {
 	let auth = `${config.loggedInUser.username}:${config.loggedInUser.password}`;
 	const [result, data] = await Get('/user/get/' + config.loggedInUser.username, auth);
@@ -244,8 +253,13 @@ async function UpdateBalance() {
 
 }
 
+transactionRefresh.addEventListener('click', PopulateFromServer);
+mainRefresh.addEventListener('click', PopulateFromServer);
+
 Get('/').then(([result, data]) => {
 	if (!result) {
 		alert("NO SERVER");
 	}
 })
+
+
